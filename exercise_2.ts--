@@ -17,14 +17,14 @@ interface ElementSet {
     button: Element
 }
 
+let elementSets: Array<ElementSet> = [];
+
 enum Colors {
     Green,
     Red,
     Blue,
     Orange
 }
-
-let elementSet: Array<ElementSet> = [];
 
 let squareSizeNum: number = 100;
 

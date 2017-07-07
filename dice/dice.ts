@@ -1,113 +1,74 @@
-let dieSideNum: number = 100;
-
-let dieSide: string = `${dieSideNum}px`;
-
-let dieBorder = '2px solid black';
-
-let diePadding = '10px';
-
-let dieMargin = '10px';
-
-enum RolledValues {
-    One = 1,
-    
-    Two,
-    
-    Three,
-    
-    Four,
-    
-    Five,
-    
-    Six
+class Dice {
+    span: Element;
+    constructor(span: Element) {
+        this.span = span;
+    }
 }
-
-let getRandomIntValue: Function = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-interface DieType {
-    element: Element
-}
-
-class Die {
-    element: Element;
-    
-    length: number;
-    
-    width: number;
-    
-    border: string;
-    
-    value: number;
-
-    constructor(element: Element) {
-        this.element = element;
+class DiceRoller extends Dice {
+    // button: Element = document.createElement('button');
+    constructor(span: Element) {
+        super(span);
+        (<HTMLElement>span).style.cssText = "border: 5px solid black; display: inline-block; height: 50px;  width: 50px; margin: 2px"; 
+        // this.button.textContent = "Role Dice";      
+        // document.body.appendChild(this.button);  
+    }
+    rolleDice(diceValue: number): boolean {
+        (<HTMLElement>this.span).textContent = DiceValues[diceValue];
+        return true;
     }
 }
 
-class DieRoller extends Die {
-    rollDie(): void {
-        this.value = getRandomIntValue(1, 6);
+class DiceRollerButton {
+  button: Element;
+  constructor(button: Element) {
+    this.button = button;
+    (<HTMLElement>this.button).style.cssText = "display: inline-block;";
+    this.button.textContent = "Roll!";
+    document.body.appendChild(this.button);
+  }
 
-        (this.element as HTMLElement).textContent = RolledValues[this.value];
-    }
+  roll(diceCollection: Array<DiceRoller>) {
+    diceCollection.forEach((item) => {
+      item.span.textContent = DiceValues[getRandomIntInclusive(1, 6)];
+    });
+  }
 }
 
-let dice: Array<DieType> = [];
+enum DiceValues {
+    one = 1,
+    two,
+    three,
+    four,
+    five,
+    six
+}
+interface DiceTypes {
+    span: Element;
+}
+let Elements: Array<DiceTypes> = [];
 
-let diceItselfs: Array<DieRoller> = [];
+let diceCollection: Array<DiceRoller> = [];
 
-for (let i: number = 0; i < 5; i++) {
-    dice.push({
-        element: document.createElement('div')
+for (let index: number = 0; index < 5; index++) {
+    Elements.push({
+        'span': document.createElement('span'),
     });
 }
+let getRandomIntInclusive: Function = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+Elements.map((elem, index) => {
+    let cube = new DiceRoller(elem.span);
+    // let button: Element = document.createElement('button');
+    document.body.appendChild(elem.span);
 
-dice.map((item, index) => {
-    let currentDie = new DieRoller(item.element);
-    
-    (currentDie.element as HTMLElement).style.height = dieSide;
-    
-    (currentDie.element as HTMLElement).style.width = dieSide;
-    
-    (currentDie.element as HTMLElement).style.border = dieBorder;
-    
-    (currentDie.element as HTMLElement).style.padding = diePadding;
-    
-    (currentDie.element as HTMLElement).style.margin = dieMargin;
-    
-    currentDie.value = getRandomIntValue(1, 6);
-    
-    currentDie.element.textContent = RolledValues[currentDie.value];
-    
-    document.body.appendChild(currentDie.element);
-
-    diceItselfs.push(currentDie);
+    diceCollection.push(cube);
 });
 
-class DieRollerButton {
-    element: Element;
+let diceRollerButton = new DiceRollerButton(document.createElement('button'));
 
-    roll(dice: Array<DieRoller>): void {
-        dice.map((item) => {
-            item.rollDie();
-        })
-    }
-
-    constructor(element: Element) {
-        this.element = element;
-
-        (this.element as HTMLElement).textContent = 'Roll the Dice!';
-    }
+diceRollerButton.button.onclick = (event): void => {
+  diceRollerButton.roll(diceCollection);
 }
-
-let button = document.createElement('button');
-
-let dieRollerButton = new DieRollerButton(button);
-
-(dieRollerButton.element as HTMLElement).onclick = (event) => {
-    dieRollerButton.roll(diceItselfs);
-};
-
-document.body.appendChild(dieRollerButton.element);

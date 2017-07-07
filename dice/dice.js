@@ -8,74 +8,70 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var dieSideNum = 100;
-var dieSide = dieSideNum + "px";
-var dieBorder = '2px solid black';
-var diePadding = '10px';
-var dieMargin = '10px';
-var RolledValues;
-(function (RolledValues) {
-    RolledValues[RolledValues["One"] = 1] = "One";
-    RolledValues[RolledValues["Two"] = 2] = "Two";
-    RolledValues[RolledValues["Three"] = 3] = "Three";
-    RolledValues[RolledValues["Four"] = 4] = "Four";
-    RolledValues[RolledValues["Five"] = 5] = "Five";
-    RolledValues[RolledValues["Six"] = 6] = "Six";
-})(RolledValues || (RolledValues = {}));
-var getRandomIntValue = function (min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-var Die = (function () {
-    function Die(element) {
-        this.element = element;
+var Dice = (function () {
+    function Dice(span) {
+        this.span = span;
     }
-    return Die;
+    return Dice;
 }());
-var DieRoller = (function (_super) {
-    __extends(DieRoller, _super);
-    function DieRoller() {
-        return _super !== null && _super.apply(this, arguments) || this;
+var DiceRoller = (function (_super) {
+    __extends(DiceRoller, _super);
+    // button: Element = document.createElement('button');
+    function DiceRoller(span) {
+        var _this = _super.call(this, span) || this;
+        span.style.cssText = "border: 5px solid black; display: inline-block; height: 50px;  width: 50px; margin: 2px";
+        return _this;
+        // this.button.textContent = "Role Dice";      
+        // document.body.appendChild(this.button);  
     }
-    DieRoller.prototype.rollDie = function () {
-        this.value = getRandomIntValue(1, 6);
-        this.element.textContent = RolledValues[this.value];
+    DiceRoller.prototype.rolleDice = function (diceValue) {
+        this.span.textContent = DiceValues[diceValue];
+        return true;
     };
-    return DieRoller;
-}(Die));
-var dice = [];
-var diceItselfs = [];
-for (var i = 0; i < 5; i++) {
-    dice.push({
-        element: document.createElement('div')
-    });
-}
-dice.map(function (item, index) {
-    var currentDie = new DieRoller(item.element);
-    currentDie.element.style.height = dieSide;
-    currentDie.element.style.width = dieSide;
-    currentDie.element.style.border = dieBorder;
-    currentDie.element.style.padding = diePadding;
-    currentDie.element.style.margin = dieMargin;
-    currentDie.value = getRandomIntValue(1, 6);
-    currentDie.element.textContent = RolledValues[currentDie.value];
-    document.body.appendChild(currentDie.element);
-    diceItselfs.push(currentDie);
-});
-var DieRollerButton = (function () {
-    function DieRollerButton(element) {
-        this.element = element;
-        this.element.textContent = 'Roll the Dice!';
+    return DiceRoller;
+}(Dice));
+var DiceRollerButton = (function () {
+    function DiceRollerButton(button) {
+        this.button = button;
+        this.button.style.cssText = "display: inline-block;";
+        this.button.textContent = "Roll!";
+        document.body.appendChild(this.button);
     }
-    DieRollerButton.prototype.roll = function (dice) {
-        dice.map(function (item) {
-            item.rollDie();
+    DiceRollerButton.prototype.roll = function (diceCollection) {
+        diceCollection.forEach(function (item) {
+            item.span.textContent = DiceValues[getRandomIntInclusive(1, 6)];
         });
     };
-    return DieRollerButton;
+    return DiceRollerButton;
 }());
-var button = document.createElement('button');
-var dieRollerButton = new DieRollerButton(button);
-dieRollerButton.element.onclick = function (event) {
-    dieRollerButton.roll(diceItselfs);
+var DiceValues;
+(function (DiceValues) {
+    DiceValues[DiceValues["one"] = 1] = "one";
+    DiceValues[DiceValues["two"] = 2] = "two";
+    DiceValues[DiceValues["three"] = 3] = "three";
+    DiceValues[DiceValues["four"] = 4] = "four";
+    DiceValues[DiceValues["five"] = 5] = "five";
+    DiceValues[DiceValues["six"] = 6] = "six";
+})(DiceValues || (DiceValues = {}));
+var Elements = [];
+var diceCollection = [];
+for (var index = 0; index < 5; index++) {
+    Elements.push({
+        'span': document.createElement('span')
+    });
+}
+var getRandomIntInclusive = function (min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 };
-document.body.appendChild(dieRollerButton.element);
+Elements.map(function (elem, index) {
+    var cube = new DiceRoller(elem.span);
+    // let button: Element = document.createElement('button');
+    document.body.appendChild(elem.span);
+    diceCollection.push(cube);
+});
+var diceRollerButton = new DiceRollerButton(document.createElement('button'));
+diceRollerButton.button.onclick = function (event) {
+    diceRollerButton.roll(diceCollection);
+};
